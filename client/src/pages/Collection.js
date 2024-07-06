@@ -6,7 +6,7 @@ const Collection = () => {
   const [searchResults, setSearchResults] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/collection").then(
+    fetch("http://localhost:8000/api/collection").then(
       res => res.json()
     ).then(
       data => {
@@ -16,7 +16,7 @@ const Collection = () => {
   }, []);
 
   const handleSearch = () => {
-    fetch("http://localhost:5000/search_card", {  // Make sure the URL is correct
+    fetch("http://localhost:8000/search_card", {  // Make sure the URL is correct
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -41,7 +41,7 @@ const Collection = () => {
   };
 
   const addCardToCollection = (cardId) => {
-    fetch("http://localhost:5000/api/collection", {
+    fetch("http://localhost:8000/api/collection", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -59,7 +59,7 @@ const Collection = () => {
   };
 
   const removeCardFromCollection = (cardId) => {
-    fetch(`http://localhost:5000/api/collection/${cardId}`, {
+    fetch(`http://localhost:8000/api/collection/${cardId}`, {
       method: "DELETE",
     }).then(
       () => {

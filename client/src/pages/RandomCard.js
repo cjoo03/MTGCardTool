@@ -4,7 +4,7 @@ const RandomCard = () => {
   const [randomCard, setRandomCard] = useState(null);
 
   const fetchRandomCard = () => {
-    fetch("http://localhost:5000/random_card").then(
+    fetch("http://localhost:8000/random_card").then(
       res => res.json()
     ).then(
       data => {
