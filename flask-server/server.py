@@ -73,7 +73,16 @@ def remove_card_from_collection(card_id):
 def get_card_details(card_id):
     url = f"https://api.scryfall.com/cards/{card_id}"
     response = requests.get(url)
-    return response.json()
+    card_data = response.json()
+
+    if 'tcgplayer_id' in card_data:
+        tcgplayer_id = card_data['tcgplayer_id']
+        tcgplayer_url = f"https://api.scryfall.com/cards/tcgplayer/{tcgplayer_id}"
+        tcgplayer_response = requests.get(tcgplayer_url)
+        tcgplayer_data = tcgplayer_response.json()
+        card_data['price'] = tcgplayer_data.get('prices', {})
+
+    return card_data
 
 def get_random_card():
     url = "https://api.scryfall.com/cards/random"
@@ -90,8 +99,6 @@ def search_card(query):
     response = requests.get(url)
     return response.json()
 
-# Creates a route for the random card endpoint
-
 @app.route("/commander_card")
 def commander_card():
     commander_data = get_commander()
@@ -107,7 +114,6 @@ def search_card_route():
     search_term = request.json.get("search_term")
     search_results = search_card(search_term)
     return jsonify(search_results)
-
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8000, debug=True)

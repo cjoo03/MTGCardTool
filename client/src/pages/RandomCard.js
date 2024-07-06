@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import HomeButton from '../components/HomeButton';
 
 const RandomCard = () => {
   const [randomCard, setRandomCard] = useState(null);
@@ -8,6 +9,7 @@ const RandomCard = () => {
       res => res.json()
     ).then(
       data => {
+        console.log('Random Card Data:', data);
         setRandomCard(data);
       }
     ).catch(
@@ -23,6 +25,7 @@ const RandomCard = () => {
 
   return (
     <div>
+      <HomeButton />
       {randomCard ? (
         <div>
           <img src={randomCard.image_uris.normal} alt={randomCard.name} />
@@ -30,6 +33,9 @@ const RandomCard = () => {
           <p><b>Type:</b> {randomCard.type_line}</p>
           <p><b>Mana Cost:</b> {randomCard.mana_cost}</p>
           <p>{randomCard.oracle_text}</p>
+          {randomCard.prices && (
+            <p><b>Price:</b> ${randomCard.prices.usd}</p>
+          )}
           <button onClick={fetchRandomCard}>Get Another Random Card</button>
         </div>
       ) : (

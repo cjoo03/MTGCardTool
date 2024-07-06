@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import HomeButton from '../components/HomeButton'
 
 const CommanderDis = () => {
   const [commanderCard, setCommanderCard] = useState(null);
@@ -12,7 +13,7 @@ const CommanderDis = () => {
       }
     ).catch(
       error => {
-        console.error("Error fetching random commander card:", error);
+        console.error("Error fetching commander card:", error);
       }
     );
   };
@@ -23,6 +24,7 @@ const CommanderDis = () => {
 
   return (
     <div>
+      <HomeButton />
       {commanderCard ? (
         <div>
           <img src={commanderCard.image_uris.normal} alt={commanderCard.name} />
@@ -30,6 +32,7 @@ const CommanderDis = () => {
           <p><b>Type:</b> {commanderCard.type_line}</p>
           <p><b>Mana Cost:</b> {commanderCard.mana_cost}</p>
           <p>{commanderCard.oracle_text}</p>
+          <p><b>Price:</b> ${commanderCard.prices.usd}</p>
           <button onClick={fetchCommanderCard}>Get Another Commander</button>
         </div>
       ) : (

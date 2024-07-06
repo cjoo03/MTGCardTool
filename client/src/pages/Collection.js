@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import HomeButton from '../components/HomeButton'
 
 const Collection = () => {
   const [collection, setCollection] = useState([]);
@@ -83,6 +84,7 @@ const Collection = () => {
       <button onClick={handleSearch}>Search</button>
 
       <div>
+        <HomeButton />
         <h2>Search Results</h2>
         {searchResults.map((card, index) => (
           <div key={index}>
@@ -105,6 +107,7 @@ const Collection = () => {
               <p>{card.type_line}</p>
               <p>{card.mana_cost}</p>
               <p>{card.oracle_text}</p>
+              <p><b>Price:</b> ${card.prices.usd}</p>
               <button onClick={() => removeCardFromCollection(card.id)}>Remove from Collection</button>
             </div>
           ))
