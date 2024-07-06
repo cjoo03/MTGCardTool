@@ -4,7 +4,7 @@ import requests
 import sqlite3
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 # Database setup
 def init_db():
@@ -80,12 +80,23 @@ def get_random_card():
     response = requests.get(url)
     return response.json()
 
+def get_commander():
+    url = "https://api.scryfall.com/cards/random?q=is%3Acommander"
+    response = requests.get(url)
+    return response.json()
+
 def search_card(query):
     url = f"https://api.scryfall.com/cards/search?q={query}"
     response = requests.get(url)
     return response.json()
 
 # Creates a route for the random card endpoint
+
+@app.route("/commander_card")
+def commander_card():
+    commander_data = get_commander()
+    return jsonify(commander_data)
+
 @app.route("/random_card")
 def random_card():
     card_data = get_random_card()
@@ -99,4 +110,4 @@ def search_card_route():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=8000, debug=True)
