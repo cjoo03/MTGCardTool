@@ -17,6 +17,14 @@ def init_db():
             user_id INTEGER NOT NULL
         )
     ''')
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS tags (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            card_id TEXT NOT NULL,
+            user_id INTEGER NOT NULL,
+            tag TEXT NOT NULL
+        )
+    ''')
     conn.commit()
     conn.close()
 
@@ -53,7 +61,9 @@ def get_collection():
     card_details = []
     for card in collection:
         card_id = card[1]
-        card_details.append(get_card_details(card_id))
+        card_info = get_card_details(card_id)
+        card_info['tags'] = get_card_tags(card_id)
+        card_details.append(card_info)
 
     return jsonify(card_details)
 
@@ -65,10 +75,54 @@ def remove_card_from_collection(card_id):
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
     cursor.execute('DELETE FROM collection WHERE card_id = ? AND user_id = ?', (card_id, user_id))
+    cursor.execute('DELETE FROM tags WHERE card_id = ? AND user_id = ?', (card_id, user_id))
     conn.commit()
     conn.close()
 
     return jsonify({'message': 'Card removed from collection'}), 200
+
+# Add tag to card
+@app.route('/api/tags', methods=['POST'])
+def add_tag():
+    data = request.get_json()
+    card_id = data['card_id']
+    tag = data['tag']
+    user_id = 1  # Placeholder for user ID
+
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    cursor.execute('INSERT INTO tags (card_id, user_id, tag) VALUES (?, ?, ?)', (card_id, user_id, tag))
+    conn.commit()
+    conn.close()
+
+    return jsonify({'message': 'Tag added'}), 201
+
+# Remove tag from card
+@app.route('/api/tags', methods=['DELETE'])
+def remove_tag():
+    data = request.get_json()
+    card_id = data['card_id']
+    tag = data['tag']
+    user_id = 1  # Placeholder for user ID
+
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    cursor.execute('DELETE FROM tags WHERE card_id = ? AND user_id = ? AND tag = ?', (card_id, user_id, tag))
+    conn.commit()
+    conn.close()
+
+    return jsonify({'message': 'Tag removed'}), 200
+
+def get_card_tags(card_id):
+    user_id = 1  # Placeholder for user ID
+
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT tag FROM tags WHERE card_id = ? AND user_id = ?', (card_id, user_id))
+    tags = [row[0] for row in cursor.fetchall()]
+    conn.close()
+
+    return tags
 
 def get_card_details(card_id):
     url = f"https://api.scryfall.com/cards/{card_id}"
@@ -94,10 +148,21 @@ def get_commander():
     response = requests.get(url)
     return response.json()
 
-def search_card(query):
-    url = f"https://api.scryfall.com/cards/search?q={query}"
+def search_card(query, order='name', dir='asc', unique='prints'):
+    url = f"https://api.scryfall.com/cards/search?q={query}&unique={unique}&order={order}&dir={dir}"
     response = requests.get(url)
-    return response.json()
+    cards_data = response.json()
+
+    if 'data' in cards_data:
+        for card in cards_data['data']:
+            if 'tcgplayer_id' in card:
+                tcgplayer_id = card['tcgplayer_id']
+                tcgplayer_url = f"https://api.scryfall.com/cards/tcgplayer/{tcgplayer_id}"
+                tcgplayer_response = requests.get(tcgplayer_url)
+                tcgplayer_data = tcgplayer_response.json()
+                card['price'] = tcgplayer_data.get('prices', {})
+
+    return cards_data
 
 @app.route("/commander_card")
 def commander_card():
@@ -111,9 +176,18 @@ def random_card():
 
 @app.route("/search_card", methods=["POST"])
 def search_card_route():
-    search_term = request.json.get("search_term")
-    search_results = search_card(search_term)
-    return jsonify(search_results)
+    data = request.json
+    search_term = data.get('search_term')
+    order = data.get('order', 'name')
+    dir = data.get('dir', 'asc')
+    unique = data.get('unique', 'prints')
+
+    cards_data = search_card(search_term, order, dir, unique)
+
+    if 'error' in cards_data:
+        return jsonify({'error': 'Error fetching data from Scryfall'}), 400
+    else:
+        return jsonify(cards_data)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8000, debug=True)

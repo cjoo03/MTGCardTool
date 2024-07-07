@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import RandomCardPage from './pages/RandomCard';
 import CollectionPage from './pages/Collection';
 import CommanderDis  from './pages/CommanderDis';
+import './styling/styles.css'
 
 function App() {
   return (
