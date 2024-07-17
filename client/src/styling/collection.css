@@ -1,0 +1,146 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #1e1e1e;
+    color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* Collection Page */
+  .collection-page {
+    padding: 20px;
+  }
+  
+  .collection-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .search-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .search-input,
+  .search-select,
+  .search-button {
+    padding: 10px;
+    margin-right: 10px;
+    border: 1px solid #444;
+    border-radius: 4px;
+    background-color: #2e2e2e;
+    color: #f5f5f5;
+  }
+  
+  .search-button {
+    cursor: pointer;
+    border: none;
+  }
+  
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+  }
+  
+  .card-container {
+    position: relative;
+    border: 1px solid #444;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #2e2e2e;
+    transition: transform 0.3s;
+    cursor: pointer;
+  }
+  
+  .card-container:hover {
+    transform: translateY(-10px);
+  }
+  
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
+    pointer-events: none;
+    transition: background-position 0.3s;
+  }
+  
+  .card {
+    display: block;
+    width: 100%;
+    border-bottom: 1px solid #444;
+  }
+  
+  .card-details {
+    padding: 10px;
+  }
+  
+  .card-action-button,
+  .remove-button,
+  .tag-button {
+    padding: 5px 10px;
+    margin: 5px 0;
+    border: none;
+    border-radius: 4px;
+    background-color: #444;
+    color: #f5f5f5;
+    cursor: pointer;
+  }
+  
+  .remove-button {
+    background-color: #ff5c5c;
+  }
+  
+  .tag {
+    display: inline-block;
+    padding: 5px;
+    margin-right: 5px;
+    background-color: #444;
+    border-radius: 4px;
+  }
+  
+  .tag-remove-button {
+    margin-left: 5px;
+    background-color: transparent;
+    border: none;
+    color: #ff5c5c;
+    cursor: pointer;
+  }
+  
+  .tag-input {
+    padding: 5px;
+    margin-top: 5px;
+    border: 1px solid #444;
+    border-radius: 4px;
+    background-color: #2e2e2e;
+    color: #f5f5f5;
+  }
+  
+  .divider {
+    margin: 20px 0;
+    border-top: 1px solid #444;
+  }
+  
+  .collection-minimized {
+    padding: 10px;
+    background-color: #2e2e2e;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+  }
+  
+  .toggle-button {
+    padding: 5px 10px;
+    background-color: #444;
+    border: none;
+    border-radius: 4px;
+    color: #f5f5f5;
+    cursor: pointer;
+  }

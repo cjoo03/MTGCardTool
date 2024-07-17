@@ -47,22 +47,37 @@ export default function Home() {
           <li><Link to="/random">Random Card</Link></li>
         </ul>
       </nav>
-      <header className="home-header">
+      <header className="hero">
         <h1>Welcome to MTG Card Collection Tracker</h1>
         <p>This is your ultimate tool for managing and tracking your Magic: The Gathering card collection.</p>
       </header>
-      <div className="container">
-        {featuredCard && (
-          <div 
-            className="card-container"
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
-          >
-            <div className="overlay"></div>
-            <img src={featuredCard.image_uris?.normal} alt={featuredCard.name} className="card" />
-          </div>
-        )}
+      <div className="featured-section">
+        <h2>Featured Card</h2>
+        <div className="container">
+          {featuredCard && (
+            <div 
+              className="card-container"
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
+            >
+              <div className="overlay"></div>
+              <img src={featuredCard.image_uris?.normal} alt={featuredCard.name} className="card" />
+            </div>
+          )}
+        </div>
       </div>
+      <div className="featured-section">
+        <h2>Explore Sets</h2>
+        <div className="set-cards">
+          <Link to="/set/khm" className="set-card">Kaldheim</Link>
+          <Link to="/set/znr" className="set-card">Zendikar Rising</Link>
+          <Link to="/set/mh2" className="set-card">Modern Horizons 2</Link>
+          {/* Add more sets as needed */}
+        </div>
+      </div>
+      <footer className="footer">
+        <p>&copy; 2024 MTG Card Collection Tracker. All rights reserved.</p>
+      </footer>
     </div>
   );
 }

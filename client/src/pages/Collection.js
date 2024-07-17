@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import HomeButton from '../components/HomeButton';
-import '../styling/styles.css';  // Ensure this path is correct
+import '../styling/collection.css';  // Ensure this path is correct
 
 const Collection = () => {
   const [collection, setCollection] = useState([]);
@@ -130,64 +130,99 @@ const Collection = () => {
     );
   };
 
+  const handleMouseMove = (e) => {
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    const rotateX = (y / rect.height - 0.5) * 20; // Adjust the rotation values as needed
+    const rotateY = (x / rect.width - 0.5) * 20;
+
+    card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+
+    const overlay = card.querySelector('.overlay');
+    overlay.style.backgroundPosition = `${x / rect.width * 100}% ${y / rect.height * 100}%`;
+  };
+
+  const handleMouseLeave = (e) => {
+    const card = e.currentTarget;
+    card.style.transform = 'rotateX(0deg) rotateY(0deg)';
+
+    const overlay = card.querySelector('.overlay');
+    overlay.style.backgroundPosition = '50% 50%';
+  };
+
   return (
-    <div>
-      <h2>My Collection</h2>
-
-      <input 
-        type="text" 
-        value={searchTerm} 
-        onChange={(e) => setSearchTerm(e.target.value)} 
-        placeholder="Search for cards" 
-      />
-      <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
-        <option value="name">Name</option>
-        <option value="set">Set</option>
-        <option value="released">Release Date</option>
-        <option value="rarity">Rarity</option>
-        <option value="usd">Price (USD)</option>
-        <option value="eur">Price (EUR)</option>
-      </select>
-      <select value={sortDir} onChange={(e) => setSortDir(e.target.value)}>
-        <option value="asc">Ascending</option>
-        <option value="desc">Descending</option>
-      </select>
-      <button onClick={handleSearch}>Search</button>
-
-      <div>
+    <div className="collection-page">
+      <header className="collection-header">
+        <h2>My Collection</h2>
         <HomeButton />
-        <h2>Search Results</h2>
-        <div className="search-results">
-          {searchResults.map((card, index) => (
-            <div key={index} className="card-container">
-              <img src={card.image_uris?.normal} alt={card.name} />
-              <div className="card-details">
-                <h4>{card.name}</h4>
-                <p>{card.type_line}</p>
-                <p>{card.mana_cost}</p>
-                <p>{card.oracle_text}</p>
-                <p><b>Price:</b> ${card.prices.usd}</p>
-              </div>
-              <button onClick={() => addCardToCollection(card.id)}>Add to Collection</button>
+      </header>
+      <div className="search-container">
+        <input 
+          type="text" 
+          value={searchTerm} 
+          onChange={(e) => setSearchTerm(e.target.value)} 
+          placeholder="Search for cards" 
+          className="search-input"
+        />
+        <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} className="search-select">
+          <option value="name">Name</option>
+          <option value="set">Set</option>
+          <option value="released">Release Date</option>
+          <option value="rarity">Rarity</option>
+          <option value="usd">Price (USD)</option>
+          <option value="eur">Price (EUR)</option>
+        </select>
+        <select value={sortDir} onChange={(e) => setSortDir(e.target.value)} className="search-select">
+          <option value="asc">Ascending</option>
+          <option value="desc">Descending</option>
+        </select>
+        <button onClick={handleSearch} className="search-button">Search</button>
+      </div>
+      <div className="search-results">
+        {searchResults.map((card, index) => (
+          <div 
+            key={index} 
+            className="card-container"
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+          >
+            <div className="overlay"></div>
+            <img src={card.image_uris?.normal} alt={card.name} className="card" />
+            <div className="card-details">
+              <h4>{card.name}</h4>
+              <p>{card.type_line}</p>
+              <p>{card.mana_cost}</p>
+              <p>{card.oracle_text}</p>
+              <p><b>Price:</b> ${card.prices.usd}</p>
             </div>
-          ))}
-        </div>
+            <button onClick={() => addCardToCollection(card.id)} className="card-action-button">Add to Collection</button>
+          </div>
+        ))}
       </div>
 
       <div className="divider"></div>
 
-      <div>
+      <div className="collection-container">
         <div className="collection-header">
           <h2>My Collection</h2>
-          <button onClick={() => setIsCollectionMinimized(!isCollectionMinimized)}>
+          <button onClick={() => setIsCollectionMinimized(!isCollectionMinimized)} className="toggle-button">
             {isCollectionMinimized ? "Expand" : "Minimize"}
           </button>
         </div>
         {!isCollectionMinimized ? (
-          <div className="collection-container">
+          <div className="card-grid">
             {collection.map((card, index) => (
-              <div key={index} className="card-container">
-                <img src={card.image_uris?.normal} alt={card.name} />
+              <div 
+                key={index} 
+                className="card-container"
+                onMouseMove={handleMouseMove}
+                onMouseLeave={handleMouseLeave}
+              >
+                <div className="overlay"></div>
+                <img src={card.image_uris?.normal} alt={card.name} className="card" />
                 <div className="card-details">
                   <h4>{card.name}</h4>
                   <p>{card.type_line}</p>
@@ -199,7 +234,7 @@ const Collection = () => {
                     {card.tags.map((tag, i) => (
                       <span key={i} className="tag">
                         {tag}
-                        <button onClick={() => removeTagFromCard(card.id, tag)}>x</button>
+                        <button onClick={() => removeTagFromCard(card.id, tag)} className="tag-remove-button">x</button>
                       </span>
                     ))}
                     <input 
@@ -207,8 +242,9 @@ const Collection = () => {
                       value={tag} 
                       onChange={(e) => setTag(e.target.value)} 
                       placeholder="Add a tag" 
+                      className="tag-input"
                     />
-                    <button onClick={() => addTagToCard(card.id, tag)}>Add Tag</button>
+                    <button onClick={() => addTagToCard(card.id, tag)} className="tag-button">Add Tag</button>
                   </div>
                 </div>
                 <button className="remove-button" onClick={() => removeCardFromCollection(card.id)}>-</button>

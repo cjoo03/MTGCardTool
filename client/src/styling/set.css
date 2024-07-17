@@ -1,0 +1,41 @@
+/* Add this to set.css or your main CSS file */
+.card-container {
+    position: relative;
+    width: 200px; /* Adjust as necessary */
+    margin: 10px;
+    transform-style: preserve-3d;
+    transition: transform 0.5s;
+  }
+  
+  .card-container:hover {
+    transform: rotateY(20deg) rotateX(20deg);
+  }
+  
+  .card {
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.5s;
+  }
+  
+  .card-container:hover .card {
+    transform: translateZ(20px);
+  }
+  
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.5));
+    pointer-events: none;
+    opacity: 0.7;
+    transition: opacity 0.5s;
+  }
+  
+  .card-container:hover .overlay {
+    opacity: 0.9;
+  }
+  

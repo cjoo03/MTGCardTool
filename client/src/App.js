@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import RandomCardPage from './pages/RandomCard';
 import CollectionPage from './pages/Collection';
 import CommanderDis  from './pages/CommanderDis';
+import Set from './pages/Set';
 import './styling/styles.css'
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
           <Route path="/collection" element={<CollectionPage />} />
           <Route path="/random" element={<RandomCardPage />} />
           <Route path="/commander" element={<CommanderDis/>} />
+          <Route path="/set/:setCode" element={<Set />} />
           {/* <Route path="*" element={<noPage />} /> */}
         </Routes>
     </BrowserRouter>
