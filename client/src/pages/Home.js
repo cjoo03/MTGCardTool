@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import NavigationBar from '../components/NavigationBar';
 import { Link } from 'react-router-dom';
 import '../styling/home.css';
 
@@ -39,14 +40,7 @@ export default function Home() {
 
   return (
     <div className="home-container">
-      <nav className="home-nav">
-        <ul>
-          <li><Link to="/">Home</Link></li>
-          <li><Link to="/commander">Commander Discovery</Link></li>
-          <li><Link to="/collection">Collection</Link></li>
-          <li><Link to="/random">Random Card</Link></li>
-        </ul>
-      </nav>
+      <NavigationBar />
       <header className="hero">
         <h1>Welcome to MTG Card Collection Tracker</h1>
         <p>This is your ultimate tool for managing and tracking your Magic: The Gathering card collection.</p>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import HomeButton from '../components/HomeButton';
+import NavigationBar from '../components/NavigationBar';
 
 const RandomCard = () => {
   const [randomCard, setRandomCard] = useState(null);
@@ -25,7 +25,7 @@ const RandomCard = () => {
 
   return (
     <div>
-      <HomeButton />
+      <NavigationBar />
       {randomCard ? (
         <div>
           <img src={randomCard.image_uris.normal} alt={randomCard.name} />

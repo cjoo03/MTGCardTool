@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import HomeButton from '../components/HomeButton';
-import '../styling/collection.css';  // Ensure this path is correct
+import SearchBar from '../components/SearchBar';
+import CardItem from '../components/CardItem';
+import CollectionItem from '../components/CollectionItem';
+import LoadingSpinner from '../components/LoadingSpinner';
+import NavigationBar from '../components/NavigationBar';
+import ErrorMessage from '../components/ErrorMessage';
+import '../styling/collection.css';
 
 const Collection = () => {
   const [collection, setCollection] = useState([]);
@@ -10,18 +15,29 @@ const Collection = () => {
   const [sortDir, setSortDir] = useState("asc");
   const [tag, setTag] = useState("");
   const [isCollectionMinimized, setIsCollectionMinimized] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
+    setLoading(true);
     fetch("http://localhost:8000/api/collection").then(
       res => res.json()
     ).then(
       data => {
         setCollection(data);
+        setLoading(false);
+      }
+    ).catch(
+      error => {
+        console.error("Error fetching collection:", error);
+        setLoading(false);
+        setError("Failed to load collection");
       }
     );
   }, []);
 
   const handleSearch = () => {
+    setLoading(true);
     fetch("http://localhost:8000/search_card", {
       method: "POST",
       headers: {
@@ -38,10 +54,13 @@ const Collection = () => {
     ).then(
       data => {
         setSearchResults(data.data || []);
+        setLoading(false);
       }
     ).catch(
       error => {
         console.error("Error searching for cards:", error);
+        setLoading(false);
+        setError("Failed to search for cards");
       }
     );
   };
@@ -53,7 +72,7 @@ const Collection = () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ card_id: cardId }),
-    }).then (
+    }).then(
       res => res.json()
     ).then(
       data => {
@@ -83,7 +102,7 @@ const Collection = () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ card_id: cardId, tag }),
-    }).then (
+    }).then(
       res => res.json()
     ).then(
       () => {
@@ -110,7 +129,7 @@ const Collection = () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ card_id: cardId, tag }),
-    }).then (
+    }).then(
       res => res.json()
     ).then(
       () => {
@@ -153,112 +172,69 @@ const Collection = () => {
     overlay.style.backgroundPosition = '50% 50%';
   };
 
+  const totalValue = collection.reduce((sum, card) => sum + parseFloat(card.prices.usd || 0), 0).toFixed(2);
+
   return (
     <div className="collection-page">
-      <header className="collection-header">
-        <h2>My Collection</h2>
-        <HomeButton />
+      <header className="page-header">
+      <NavigationBar/>
       </header>
-      <div className="search-container">
-        <input 
-          type="text" 
-          value={searchTerm} 
-          onChange={(e) => setSearchTerm(e.target.value)} 
-          placeholder="Search for cards" 
-          className="search-input"
-        />
-        <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} className="search-select">
-          <option value="name">Name</option>
-          <option value="set">Set</option>
-          <option value="released">Release Date</option>
-          <option value="rarity">Rarity</option>
-          <option value="usd">Price (USD)</option>
-          <option value="eur">Price (EUR)</option>
-        </select>
-        <select value={sortDir} onChange={(e) => setSortDir(e.target.value)} className="search-select">
-          <option value="asc">Ascending</option>
-          <option value="desc">Descending</option>
-        </select>
-        <button onClick={handleSearch} className="search-button">Search</button>
-      </div>
+      <SearchBar
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        sortOrder={sortOrder}
+        setSortOrder={setSortOrder}
+        sortDir={sortDir}
+        setSortDir={setSortDir}
+        handleSearch={handleSearch}
+      />
+      {loading && <LoadingSpinner />}
+      {error && <ErrorMessage message={error} />}
       <div className="search-results">
         {searchResults.map((card, index) => (
-          <div 
-            key={index} 
-            className="card-container"
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
-          >
-            <div className="overlay"></div>
-            <img src={card.image_uris?.normal} alt={card.name} className="card" />
-            <div className="card-details">
-              <h4>{card.name}</h4>
-              <p>{card.type_line}</p>
-              <p>{card.mana_cost}</p>
-              <p>{card.oracle_text}</p>
-              <p><b>Price:</b> ${card.prices.usd}</p>
-            </div>
-            <button onClick={() => addCardToCollection(card.id)} className="card-action-button">Add to Collection</button>
-          </div>
+          <CardItem
+            key={index}
+            card={card}
+            onAddToCollection={addCardToCollection}
+            handleMouseMove={handleMouseMove}
+            handleMouseLeave={handleMouseLeave}
+          />
         ))}
       </div>
 
       <div className="divider"></div>
 
-      <div className="collection-container">
-        <div className="collection-header">
-          <h2>My Collection</h2>
-          <button onClick={() => setIsCollectionMinimized(!isCollectionMinimized)} className="toggle-button">
-            {isCollectionMinimized ? "Expand" : "Minimize"}
-          </button>
-        </div>
-        {!isCollectionMinimized ? (
-          <div className="card-grid">
-            {collection.map((card, index) => (
-              <div 
-                key={index} 
-                className="card-container"
-                onMouseMove={handleMouseMove}
-                onMouseLeave={handleMouseLeave}
-              >
-                <div className="overlay"></div>
-                <img src={card.image_uris?.normal} alt={card.name} className="card" />
-                <div className="card-details">
-                  <h4>{card.name}</h4>
-                  <p>{card.type_line}</p>
-                  <p>{card.mana_cost}</p>
-                  <p>{card.oracle_text}</p>
-                  <p><b>Price:</b> ${card.prices.usd}</p>
-                  <div>
-                    <h5>Tags:</h5>
-                    {card.tags.map((tag, i) => (
-                      <span key={i} className="tag">
-                        {tag}
-                        <button onClick={() => removeTagFromCard(card.id, tag)} className="tag-remove-button">x</button>
-                      </span>
-                    ))}
-                    <input 
-                      type="text" 
-                      value={tag} 
-                      onChange={(e) => setTag(e.target.value)} 
-                      placeholder="Add a tag" 
-                      className="tag-input"
-                    />
-                    <button onClick={() => addTagToCard(card.id, tag)} className="tag-button">Add Tag</button>
-                  </div>
-                </div>
-                <button className="remove-button" onClick={() => removeCardFromCollection(card.id)}>-</button>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="collection-minimized" onClick={() => setIsCollectionMinimized(false)}>
-            {collection.length} {collection.length === 1 ? "card" : "cards"} in collection
-          </div>
-        )}
+      <div className="collection-header">
+        <h2>My Collection</h2>
+        <button onClick={() => setIsCollectionMinimized(!isCollectionMinimized)} className="toggle-button">
+          {isCollectionMinimized ? "Expand" : "Minimize"}
+        </button>
       </div>
+      <div className="total-value">
+        <b>Total Value:</b> ${totalValue}
+      </div>
+      {!isCollectionMinimized ? (
+        <div className="card-grid">
+          {collection.map((card, index) => (
+            <CollectionItem
+              key={index}
+              card={card}
+              onRemoveFromCollection={removeCardFromCollection}
+              onRemoveTag={removeTagFromCard}
+              onAddTag={addTagToCard}
+              tag={tag}
+              setTag={setTag}
+              handleMouseMove={handleMouseMove}
+              handleMouseLeave={handleMouseLeave}
+            />
+          ))}
+        </div>
+      ) : (
+        <p className="minimized-message">Collection is minimized.</p>
+      )}
     </div>
   );
 };
 
 export default Collection;
+

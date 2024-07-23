@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import HomeButton from '../components/HomeButton'
+import NavigationBar from '../components/NavigationBar';
 
 const CommanderDis = () => {
   const [commanderCard, setCommanderCard] = useState(null);
@@ -24,7 +24,7 @@ const CommanderDis = () => {
 
   return (
     <div>
-      <HomeButton />
+      <NavigationBar/>
       {commanderCard ? (
         <div>
           <img src={commanderCard.image_uris.normal} alt={commanderCard.name} />
