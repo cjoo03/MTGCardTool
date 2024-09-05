@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import NavigationBar from '../components/NavigationBar';
 import { Link } from 'react-router-dom';
+import acrSymbol from '../img/ACRsymbol.png'
 import '../styling/home.css';
 
 export default function Home() {
@@ -63,9 +64,11 @@ export default function Home() {
       <div className="featured-section">
         <h2>Explore Sets</h2>
         <div className="set-cards">
-          <Link to="/set/khm" className="set-card">Kaldheim</Link>
-          <Link to="/set/znr" className="set-card">Zendikar Rising</Link>
-          <Link to="/set/mh2" className="set-card">Modern Horizons 2</Link>
+          <Link to="/set/acr" className="set-card">Assassin's Creed
+          <img src={acrSymbol} alt="Assassin's Creed" />
+          </Link>
+          <Link to="/set/blb" className="set-card">Bloomburrow</Link>
+          <Link to="/set/mh3" className="set-card">Modern Horizons 3</Link>
           {/* Add more sets as needed */}
         </div>
       </div>
